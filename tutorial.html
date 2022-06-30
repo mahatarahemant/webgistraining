@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webmapping_tutorial</title>
+</head>
+
+
+<!-- leaflet css -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin="" />
+
+<!-- adding predefined plugin for georeferencing -->
+<link rel="stylesheet"
+    href="./leaflet-control-osm-geocoder-master/leaflet-control-osm-geocoder-master/Control.OSMGeocoder.css">
+
+<!-- style.css must be writen above the body code -->
+<style>
+    #mapid {
+        width: 100%;
+        height: 550px;
+    }
+</style>
+
+<body>
+    <!-- creating id -->
+    <div id="mapid"> </div>
+</body>
+
+</html>
+
+
+<!-- main.js file starts from here -->
+
+
+
+
+<!-- java script code always written below the html code  -->
+<!-- adding jquery cdn workframe or library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- adding leaflet js  -->
+
+<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
+
+<script src="./leaflet-control-osm-geocoder-master/leaflet-control-osm-geocoder-master/Control.OSMGeocoder.js"></script>
+
+<script>
+    var map = L.map('mapid').setView([28.2137, 83.9877], 14);
+
+
+
+    var Topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        maxZoom: 17,
+        attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    }).addTo(map);
+
+    var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    }).addTo(map);
+    var OpenStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    // var map = L.map('mapid', {
+    //     center: [28.2137, 83.9877],
+    //     zoom: 14,
+    //     layers: [OpenStreetMap, Topo, Esri_WorldImagery]
+    // });
+    var Esri_WorldStreetMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+    }).addTo(map);
+
+    var baseMaps = {
+        "OpenStreetMap": OpenStreetMap,
+        "OpenTopoMap": Topo,
+        "Esri_WorldImagery": Esri_WorldImagery,
+        "Esri_WorldStreetMap": Esri_WorldStreetMap
+    };
+
+    // var overlayMaps = {
+    //     "Cities": cities
+    // };
+
+    // var layerControl = L.control.layers(baseMaps).addTo(map);
+
+
+
+    var point = L.marker([28.20094, 83.98148])
+        .bindPopup('Pokhara Airpot.<br> domestric ')
+        .openPopup();
+
+
+    var circle = L.circle([28.20094, 83.98148], {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        radius: 500
+    });
+
+    var polygon = L.polygon([
+        [28.20525, 83.97552],
+        [28.20447, 83.99090],
+        [28.19690, 83.98226]
+    ]);
+
+    polygon.bindPopup("I am a polygon.");
+
+    circle.bindPopup("I am a circle.");
+    var point1 = L.marker([28.21462, 83.98333])
+        .bindPopup('jalpa devi mandir ')
+        .openPopup();
+
+    var circle = L.layerGroup([circle]);
+    var polygon = L.layerGroup([polygon]);
+    var places = L.layerGroup([point, point1]);
+
+
+    // function onMapClick(e) {
+    //     alert("You clicked the map at " + e.latlng);
+    // }
+
+    // map.on('click', onMapClick);
+
+
+
+    L.control.scale().addTo(map);
+
+    var overlayMaps = {
+        "places": places,
+        "circle": circle,
+        "polygon": polygon
+    };
+
+    var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+    // var baseMaps = {
+    //     "<span style='color: gray'>Grayscale</span>": grayscale,
+    //     "Streets": streets
+    // };
+
+    // L.control.scale().addTo(map);
+
+    var popup = L.popup();
+
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng)
+            .setContent(" " + e.latlng.toString())
+            .openOn(map);
+    }
+
+    map.on('click', onMapClick);
+
+    // osm geocoder
+    var osmGeocoder = new L.Control.OSMGeocoder({
+        text: 'search'
+    });
+
+    map.addControl(osmGeocoder);
+</script>
